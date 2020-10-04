@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { API, Repository, BranchQuery } from './api/git';
 
@@ -51,6 +52,11 @@ export class GitBranch extends vscode.TreeItem {
     ) {
         super(label, collapsibleState);
     }
+
+    iconPath = {
+        light: path.join(__filename, '..', '..', 'resources', 'branch.svg'),
+        dark: path.join(__filename, '..', '..', 'resources', 'branch.svg')
+    };
 }
 
 class GitBranchQuery implements BranchQuery {
