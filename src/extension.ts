@@ -7,14 +7,11 @@ import { GitBranchProvider, GitBranch } from './gitBranchProvider';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	console.log("activating");
 	const git = getGitExtension();
 	if (!git) {
-		console.log("extension is not enabled");
 		return;
 	}
 
-	console.log("initializing");
 	const gitBranchProvider = new GitBranchProvider(git);
 	vscode.window.registerTreeDataProvider('gitBranch.branches', gitBranchProvider);
 }
