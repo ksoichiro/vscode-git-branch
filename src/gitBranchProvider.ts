@@ -33,12 +33,13 @@ export class GitBranchProvider implements vscode.TreeDataProvider<GitBranch> {
 
     private async updateBranches(repository: Repository) {
         console.log("updateBranches");
+        var current = await repository.getBranch('HEAD');
+        console.log('current: ' + JSON.stringify(current));
         var refs = await repository.getBranches(new GitBranchQuery(false, undefined, undefined, undefined));
         refs.forEach((ref) => {
             console.log(`ref: ${ref.name} ${JSON.stringify(ref)}`);
             if (ref.name) {
-                this.branches.push(new GitBranch(ref.name, vscode.TreeItemCollapsibleState.None));
-                console.log("registered " + ref.name);
+                this.branches.push(new GitBranch(ref.name, vscode.TreeItemCollapsibleState.None, current && current.name === ref.name));
             }
         });
         this._onDidChangeTreeData.fire();
@@ -49,14 +50,14 @@ export class GitBranch extends vscode.TreeItem {
     constructor(
         public readonly label: string,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        private readonly current: boolean,
     ) {
         super(label, collapsibleState);
+        // icons can be selected from codicons:
+        // https://code.visualstudio.com/api/references/icons-in-labels#icon-listing
+        // https://microsoft.github.io/vscode-codicons/dist/codicon.html
+        this.iconPath = new vscode.ThemeIcon(current ? 'circle-filled' : 'git-branch');
     }
-
-    iconPath = {
-        light: path.join(__filename, '..', '..', 'resources', 'branch.svg'),
-        dark: path.join(__filename, '..', '..', 'resources', 'branch.svg')
-    };
 }
 
 class GitBranchQuery implements BranchQuery {
