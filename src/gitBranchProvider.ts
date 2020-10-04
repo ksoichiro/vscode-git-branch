@@ -9,9 +9,12 @@ export class GitBranchProvider implements vscode.TreeDataProvider<GitBranch> {
 
     constructor(private api: API) {
         this.branches = new Array();
-        this.api.onDidOpenRepository(e => this.updateBranches(e));
         if (this.api.repositories) {
-            this.updateBranches(this.api.repositories[0]);
+            const repository = this.api.repositories[0];
+            repository.state.onDidChange(_ => {
+                this.updateBranches(repository);
+            });
+            this.updateBranches(repository);
         }
     }
 
@@ -31,12 +34,14 @@ export class GitBranchProvider implements vscode.TreeDataProvider<GitBranch> {
     private async updateBranches(repository: Repository) {
         var current = await repository.getBranch('HEAD');
         var refs = await repository.getBranches(new GitBranchQuery(false, undefined, undefined, undefined));
+        var branches = new Array();
         refs.forEach((ref) => {
             console.log(`ref: ${JSON.stringify(ref)}`);
             if (ref.name) {
-                this.branches.push(new GitBranch(ref.name, vscode.TreeItemCollapsibleState.None, current && current.name === ref.name));
+                branches.push(new GitBranch(ref.name, vscode.TreeItemCollapsibleState.None, current && current.name === ref.name));
             }
         });
+        this.branches = branches;
         this._onDidChangeTreeData.fire();
     }
 }
