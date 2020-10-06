@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { API, Repository, Ref, RefType } from './api/git';
+const compareVersions = require('compare-versions');
 
 export class GitBranchProvider implements vscode.TreeDataProvider<GitBranch> {
     private _onDidChangeTreeData: vscode.EventEmitter<GitBranch | undefined | void> = new vscode.EventEmitter<GitBranch | undefined | void>();
@@ -61,7 +62,7 @@ export class GitBranchProvider implements vscode.TreeDataProvider<GitBranch> {
                 if (!a || !a.name || !b || !b.name) {
                     return -1;
                 }
-                return b.name.localeCompare(a.name); // TODO sort by version, descending
+                return compareVersions(b.name, a.name);
             });
 
         var entries = new GitBranches();
