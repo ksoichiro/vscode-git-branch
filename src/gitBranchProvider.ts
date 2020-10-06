@@ -34,7 +34,12 @@ export class GitBranchProvider implements vscode.TreeDataProvider<GitBranch> {
         if (!gitBranch || !gitBranch.command || !gitBranch.command.arguments) {
             return;
         }
-        this.api.repositories[0].checkout(gitBranch.command.arguments[0]);
+        this.api.repositories[0].checkout(gitBranch.command.arguments[0])
+            .catch((reason) => {
+                if (reason.stderr) {
+                    vscode.window.showErrorMessage(reason.stderr, 'OK');
+                }
+            });
     }
 
     private async updateBranches(repository: Repository) {
