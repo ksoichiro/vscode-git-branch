@@ -13,6 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	const gitBranchProvider = new GitBranchProvider(git);
+	vscode.commands.registerCommand('gitBranch.checkout', async (gitBranch: GitBranch) => gitBranchProvider.checkout(gitBranch));
 	vscode.window.registerTreeDataProvider('gitBranch.branches', gitBranchProvider);
 }
 

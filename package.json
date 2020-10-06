@@ -23,10 +23,22 @@
 				}
 			]
 		},
+		"menus": {
+			"view/item/context": [
+				{
+					"command": "gitBranch.checkout",
+					"when": "viewItem == nonCurrentBranch"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "vscode-git-branch.helloWorld",
 				"title": "Hello World"
+			},
+			{
+				"command": "gitBranch.checkout",
+				"title": "Checkout branch"
 			}
 		]
 	},

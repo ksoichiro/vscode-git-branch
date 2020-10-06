@@ -30,6 +30,13 @@ export class GitBranchProvider implements vscode.TreeDataProvider<GitBranch> {
         return Promise.resolve(this.branches);
     }
 
+    checkout(gitBranch: GitBranch) {
+        if (!gitBranch || !gitBranch.command || !gitBranch.command.arguments) {
+            return;
+        }
+        this.api.repositories[0].checkout(gitBranch.command.arguments[0]);
+    }
+
     private async updateBranches(repository: Repository) {
         var current = await repository.getBranch('HEAD');
         // Getting refs by repository.getBranches() triggers the update of repository.state,
@@ -87,6 +94,17 @@ export class GitBranch extends vscode.TreeItem {
         // https://code.visualstudio.com/api/references/icons-in-labels#icon-listing
         // https://microsoft.github.io/vscode-codicons/dist/codicon.html
         this.iconPath = new vscode.ThemeIcon(current ? 'circle-filled' : 'git-branch');
+        if (current) {
+            this.contextValue = 'currentBranch';
+        } else {
+            this.contextValue = 'nonCurrentBranch';
+            this.command = {
+                title: '',
+                command: 'gitBranch.checkout',
+                tooltip: '',
+                arguments: [this.label],
+            };
+        }
     }
 
     equal(obj: GitBranch): boolean {
